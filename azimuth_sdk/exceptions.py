@@ -3,6 +3,12 @@ import re
 from httpx import codes
 
 
+class SDKError(Exception):
+    """
+    Base class for errors raised by the SDK.
+    """
+
+
 class APIErrorMeta(type):
     """
     Metaclass for the API error type.
@@ -30,7 +36,7 @@ class APIErrorMeta(type):
             return cls[status_code](source)
 
 
-class APIError(Exception, metaclass = APIErrorMeta):
+class APIError(SDKError, metaclass = APIErrorMeta):
     """
     Base class for Azimuth API errors.
     """

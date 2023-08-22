@@ -73,7 +73,7 @@ class BaseClient:
     def _tenancy_resource(self, resource, tenancy_id = None) -> Resource:
         tenancy_id = tenancy_id or self._default_tenancy_id
         if not tenancy_id:
-            raise RuntimeError("unable to detect default tenancy")
+            raise exceptions.SDKError("unable to detect default tenancy")
         logger.debug(f"creating resource for {resource} in tenancy {tenancy_id}")
         return Resource(self, resource, prefix = f"/api/tenancies/{tenancy_id}")
 

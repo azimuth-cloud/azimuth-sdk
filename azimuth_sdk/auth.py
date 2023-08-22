@@ -5,6 +5,8 @@ import threading
 
 import httpx
 
+from . import exceptions
+
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +48,7 @@ class Auth(httpx.Auth):
                 if v["type"] == self._authenticator_type
             )
         except StopIteration:
-            raise RuntimeError(f"no authenticators with type '{self._authenticator_type}'")
+            raise exceptions.SDKError(f"no authenticators with type '{self._authenticator_type}'")
         else:
             logger.debug(
                 f"using authenticator '{authenticator}' of type '{self._authenticator_type}'"

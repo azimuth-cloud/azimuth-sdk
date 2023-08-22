@@ -3,7 +3,7 @@ import os
 
 import yaml
 
-from . import auth, client
+from . import auth, client, exceptions
 
 
 logger = logging.getLogger(__name__)
@@ -89,7 +89,7 @@ class Configuration:
                 "application_credential_secret": auth["application_credential_secret"],
             }
         else:
-            raise RuntimeError(f"unsupported openstack auth type '{auth_type}'")
+            raise exceptions.SDKError(f"unsupported openstack auth type '{auth_type}'")
         logger.debug(f"using authenticator type '{authenticator_type}'")
         return cls.create(
             base_url,
@@ -126,6 +126,6 @@ class Configuration:
                     else:
                         logger.warn(f"file {path} does not exist")
             else:
-                raise RuntimeError("no openstack config file in standard locations")
+                raise exceptions.SDKError("no openstack config file in standard locations")
         else:
-            raise RuntimeError("no suitable authentication found in environment")
+            raise exceptions.SDKError("no suitable authentication found in environment")
