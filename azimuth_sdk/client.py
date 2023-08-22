@@ -4,6 +4,8 @@ import httpx
 
 from easykube import flow, rest
 
+from . import exceptions
+
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +35,14 @@ class BaseClient:
         kwargs.setdefault("follow_redirects", True)
         super().__init__(**kwargs)
         self._default_tenancy_id = default_tenancy_id
+
+    @flow.flow
+    def raise_for_status(self, response):
+        # Convert response errors into ApiErrors for better messages
+        try:
+            yield super().raise_for_status(response)
+        except httpx.HTTPStatusError as source:
+            raise exceptions.APIError(source)
 
     @flow.flow
     def _init(self):
