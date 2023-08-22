@@ -25,7 +25,9 @@ class BaseClient:
     Base class for sync and async clients.
     """
     def __init__(self, *, default_tenancy_id = None, **kwargs):
-        # Set longer default timeouts as some response take a little while
+        # Add the JSON header to all requests by default
+        kwargs.setdefault("headers", {}).setdefault("Content-Type", "application/json")
+        # Set longer default timeouts as some responses take a little while
         kwargs.setdefault("timeout", httpx.Timeout(5.0, read = 30.0))
         super().__init__(**kwargs)
         self._default_tenancy_id = default_tenancy_id
