@@ -29,6 +29,8 @@ class BaseClient:
         kwargs.setdefault("headers", {}).setdefault("Content-Type", "application/json")
         # Set longer default timeouts as some responses take a little while
         kwargs.setdefault("timeout", httpx.Timeout(5.0, read = 30.0))
+        # Follow redirects by default
+        kwargs.setdefault("follow_redirects", True)
         super().__init__(**kwargs)
         self._default_tenancy_id = default_tenancy_id
 
