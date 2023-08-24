@@ -34,8 +34,8 @@ by the SDK. **This is the recommended authentication method.**
 
 The SDK `Configuration` object can be initialised either using known credentials or from a
 [clouds.yaml file](https://docs.openstack.org/python-openstackclient/pike/configuration/index.html).
-The Azimuth SDK respects the `OS_CLOUD` and `OS_CLIENT_CONFIG_FILE` environment variables that
-the [OpenStack CLI](https://docs.openstack.org/python-openstackclient/latest/) supports.
+The Azimuth SDK respects the same `OS_CLOUD` and `OS_CLIENT_CONFIG_FILE` environment variables that
+the [OpenStack CLI](https://docs.openstack.org/python-openstackclient/latest/) respects.
 
 ```python
 from azimuth_sdk import Configuration
@@ -65,8 +65,9 @@ config = Configuration.from_openstack_cloud_config(
 config = Configuration.from_environment(AZIMUTH_URL)
 ```
 
-Once you have a configuration, it can be used to create a synchronous or an asynchronous client
-with which you can list the available tenancies:
+Once you have a `Configuration` object, it can be used to create either synchronous or
+asynchronous clients with which you can interact with Azimuth, e.g. by listing the
+available tenancies:
 
 ```python
 # Synchronous client
@@ -80,15 +81,15 @@ async with config.async_client() as client:
         print(tenancy.name)
 ```
 
-You can then interact with resources for a tenancy. For each of these methods, the `tenancy_id`
-is optional - if it is not given, a default tenancy ID will be used. The default tenancy ID
-can be set as follows:
+> **WARNING**
+>
+> It is important that the client is used inside a `with` or `async with` block, for
+> synchronous or asynchronous clients respectively, as this ensures that resources
+> are set up and released as required.
+>
+> See Python's [contextlib](https://docs.python.org/3/library/contextlib.html) for more information.
 
-  * Explicitly when the `Configuration` is created
-  * From `clouds.{cloud}.auth.project_id` in the `clouds.yaml`, if present
-  * As the first available tenancy in the tenancy list (may not be deterministic)
-
-The following resources are available:
+You can then interact with resources for a tenancy. The following resources are available:
 
 ```python
 # Interact with the images for a tenancy
@@ -114,6 +115,13 @@ client.kubernetes_app_templates(tenancy_id = None)
 # Interact with the Kubernetes apps for a tenancy
 client.kubernetes_apps(tenancy_id = None)
 ```
+
+For each of these methods, the `tenancy_id` is optional. If it is not given, a default
+tenancy ID will be used, which is determined as follows:
+
+  * Explicitly set when the `Configuration` is created
+  * From `clouds.{cloud}.auth.project_id` in the `clouds.yaml`, if present
+  * As the first available tenancy in the tenancy list (may not be deterministic)
 
 Each of these returns a `Resource` object, which can be interacted with as follows.
 
