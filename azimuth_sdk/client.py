@@ -52,7 +52,7 @@ class BaseClient:
         if not self._default_tenancy_id:
             logger.debug("discovering default tenancy")
             # Use the first tenancy as the default tenancy
-            default_tenancy = self.tenancies().first()
+            default_tenancy = yield self.tenancies().first()
             if default_tenancy:
                 self._default_tenancy_id = default_tenancy.id
         if self._default_tenancy_id:
