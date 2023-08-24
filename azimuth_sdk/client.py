@@ -52,92 +52,88 @@ class BaseClient:
         if not self._default_tenancy_id:
             logger.debug("discovering default tenancy")
             # Use the first tenancy as the default tenancy
-            tenancies = self.tenancies().list()
-            try:
-                default_tenancy = yield tenancies._next_item()
-            except tenancies.StopIteration:
-                pass
-            else:
+            default_tenancy = self.tenancies().first()
+            if default_tenancy:
                 self._default_tenancy_id = default_tenancy.id
         if self._default_tenancy_id:
             logger.debug(f"using {self._default_tenancy_id} as default tenancy")
         return self
 
-    def tenancies(self) -> Resource:
+    def tenancies(self):
         """
         Returns a REST resource for interacting with tenancies.
         """
         logger.debug("creating resource for tenancies")
         return Resource(self, "tenancies", prefix = "/api")
     
-    def _tenancy_resource(self, resource, tenancy_id = None) -> Resource:
+    def _tenancy_resource(self, resource, tenancy_id = None):
         tenancy_id = tenancy_id or self._default_tenancy_id
         if not tenancy_id:
             raise exceptions.SDKError("unable to detect default tenancy")
         logger.debug(f"creating resource for {resource} in tenancy {tenancy_id}")
         return Resource(self, resource, prefix = f"/api/tenancies/{tenancy_id}")
 
-    def images(self, tenancy_id = None) -> Resource:
+    def images(self, tenancy_id = None):
         """
         Returns a REST resource for interacting with the images for a tenancy.
         """
         return self._tenancy_resource("images", tenancy_id)
 
-    def sizes(self, tenancy_id = None) -> Resource:
+    def sizes(self, tenancy_id = None):
         """
         Returns a REST resource for interacting with the sizes for a tenancy.
         """
         return self._tenancy_resource("sizes", tenancy_id)
 
-    def volumes(self, tenancy_id = None) -> Resource:
+    def volumes(self, tenancy_id = None):
         """
         Returns a REST resource for interacting with the volumes for a tenancy.
         """
         return self._tenancy_resource("volumes", tenancy_id)
 
-    def external_ips(self, tenancy_id = None) -> Resource:
+    def external_ips(self, tenancy_id = None):
         """
         Returns a REST resource for interacting with the external IPs for a tenancy.
         """
         return self._tenancy_resource("external_ips", tenancy_id)
 
-    def machines(self, tenancy_id = None) -> Resource:
+    def machines(self, tenancy_id = None):
         """
         Returns a REST resource for interacting with the machines for a tenancy.
         """
         return self._tenancy_resource("machines", tenancy_id)
 
-    def cluster_types(self, tenancy_id = None) -> Resource:
+    def cluster_types(self, tenancy_id = None):
         """
         Returns a REST resource for interacting with the CaaS cluster types for a tenancy.
         """
         return self._tenancy_resource("cluster_types", tenancy_id)
     
-    def clusters(self, tenancy_id = None) -> Resource:
+    def clusters(self, tenancy_id = None):
         """
         Returns a REST resource for interacting with the CaaS clusters for a tenancy.
         """
         return self._tenancy_resource("clusters", tenancy_id)
 
-    def kubernetes_cluster_templates(self, tenancy_id = None) -> Resource:
+    def kubernetes_cluster_templates(self, tenancy_id = None):
         """
         Returns a REST resource for interacting with the Kubernetes cluster templates for a tenancy.
         """
         return self._tenancy_resource("kubernetes_cluster_templates", tenancy_id)
 
-    def kubernetes_clusters(self, tenancy_id = None) -> Resource:
+    def kubernetes_clusters(self, tenancy_id = None):
         """
         Returns a REST resource for interacting with the Kubernetes clusters for a tenancy.
         """
         return self._tenancy_resource("kubernetes_clusters", tenancy_id)
 
-    def kubernetes_app_templates(self, tenancy_id = None) -> Resource:
+    def kubernetes_app_templates(self, tenancy_id = None):
         """
         Returns a REST resource for interacting with the Kubernetes app templates for a tenancy.
         """
         return self._tenancy_resource("kubernetes_app_templates", tenancy_id)
 
-    def kubernetes_apps(self, tenancy_id = None) -> Resource:
+    def kubernetes_apps(self, tenancy_id = None):
         """
         Returns a REST resource for interacting with the Kubernetes apps for a tenancy.
         """
