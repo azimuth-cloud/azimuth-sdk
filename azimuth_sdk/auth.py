@@ -35,12 +35,18 @@ class Auth(httpx.Auth):
         self._sync_lock = threading.RLock()
         self._async_lock = asyncio.Lock()
 
+    def _raise_for_status(self, response):
+        try:
+            response.raise_for_status()
+        except httpx.HTTPStatusError as source:
+            raise exceptions.APIError(source)
+
     def _build_authenticators_request(self):
         logger.debug("building authenticators request")
         return httpx.Request("GET", f"{self._base_url}/auth/authenticators/")
 
     def _handle_authenticators_response(self, response):
-        response.raise_for_status()
+        self._raise_for_status(response)
         try:
             authenticator = next(
                 k
@@ -64,7 +70,7 @@ class Auth(httpx.Auth):
         )
     
     def _handle_token_response(self, response):
-        response.raise_for_status()
+        self._raise_for_status(response)
         logger.debug("extracting token")
         self._token = response.json()["token"]
 
