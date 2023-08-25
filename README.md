@@ -56,7 +56,7 @@ config = Configuration.create(
 )
 
 # Initialise from a specific clouds.yaml file
-config = Configuration.from_openstack_cloud_config(
+config = Configuration.from_openstack_clouds_file(
     AZIMUTH_URL,
     "/path/to/openstack/clouds.yaml"
 )
@@ -122,6 +122,12 @@ tenancy ID will be used, which is determined as follows:
   * Explicitly set when the `Configuration` is created
   * From `clouds.{cloud}.auth.project_id` in the `clouds.yaml`, if present
   * As the first available tenancy in the tenancy list (may not be deterministic)
+
+The default tenancy for a client can also be changed using the `switch_tenancy` method:
+
+```python
+client.switch_tenancy(new_tenancy_id)
+```
 
 Each of these returns a `Resource` object, which can be interacted with as follows.
 

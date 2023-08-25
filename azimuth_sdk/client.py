@@ -57,7 +57,12 @@ class BaseClient:
                 self._default_tenancy_id = default_tenancy.id
         if self._default_tenancy_id:
             logger.debug(f"using {self._default_tenancy_id} as default tenancy")
-        return self
+
+    def switch_tenancy(self, tenancy_id):
+        """
+        Switch to the specified tenancy.
+        """
+        self._default_tenancy_id = tenancy_id
 
     def tenancies(self):
         """
@@ -146,7 +151,8 @@ class SyncClient(BaseClient, rest.SyncClient):
     """
     def __enter__(self):
         obj = super().__enter__()
-        return obj._init()
+        obj._init()
+        return self
 
 
 class AsyncClient(BaseClient, rest.AsyncClient):
@@ -155,4 +161,5 @@ class AsyncClient(BaseClient, rest.AsyncClient):
     """
     async def __aenter__(self):
         obj = await super().__aenter__()
-        return await obj._init()
+        await obj._init()
+        return self

@@ -59,7 +59,7 @@ class Configuration:
         )
     
     @classmethod
-    def from_openstack_cloud_config(
+    def from_openstack_clouds_file(
         cls,
         base_url,
         path,
@@ -117,7 +117,7 @@ class Configuration:
             ]:
                 if path:
                     if os.path.exists(path):
-                        return cls.from_openstack_cloud_config(
+                        return cls.from_openstack_clouds_file(
                             base_url,
                             path,
                             os_cloud,
