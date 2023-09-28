@@ -26,10 +26,10 @@ class Auth(httpx.Auth):
         assert \
             authenticator or authenticator_type, \
             "one of authenticator or authenticator_type is required"
-        self._base_url = base_url.rstrip("/")
-        self._authenticator = authenticator
-        self._authenticator_type = authenticator_type
-        self._auth_data = auth_data
+        self.base_url = base_url.rstrip("/")
+        self.authenticator = authenticator
+        self.authenticator_type = authenticator_type
+        self.auth_data = auth_data
         self._token = None
         # We use locks to make sure only one request refreshes the token at once
         self._sync_lock = threading.RLock()
@@ -43,7 +43,7 @@ class Auth(httpx.Auth):
 
     def _build_authenticators_request(self):
         logger.debug("building authenticators request")
-        return httpx.Request("GET", f"{self._base_url}/auth/authenticators/")
+        return httpx.Request("GET", f"{self.base_url}/auth/authenticators/")
 
     def _handle_authenticators_response(self, response):
         self._raise_for_status(response)
@@ -51,22 +51,22 @@ class Auth(httpx.Auth):
             authenticator = next(
                 k
                 for k, v in response.json().items()
-                if v["type"] == self._authenticator_type
+                if v["type"] == self.authenticator_type
             )
         except StopIteration:
-            raise exceptions.SDKError(f"no authenticators with type '{self._authenticator_type}'")
+            raise exceptions.SDKError(f"no authenticators with type '{self.authenticator_type}'")
         else:
             logger.debug(
-                f"using authenticator '{authenticator}' of type '{self._authenticator_type}'"
+                f"using authenticator '{authenticator}' of type '{self.authenticator_type}'"
             )
-            self._authenticator = authenticator
+            self.authenticator = authenticator
 
     def _build_token_request(self):
         logger.debug("building token refresh request")
         return httpx.Request(
             "POST",
-            f"{self._base_url}/auth/{self._authenticator}/token/",
-            json = self._auth_data
+            f"{self.base_url}/auth/{self.authenticator}/token/",
+            json = self.auth_data
         )
     
     def _handle_token_response(self, response):
@@ -87,7 +87,7 @@ class Auth(httpx.Auth):
             # there is nothing to do
             if token != self._token:
                 return
-            if not self._authenticator:
+            if not self.authenticator:
                 response = yield self._build_authenticators_request()
                 self._handle_authenticators_response(response)
             response = yield self._build_token_request()
