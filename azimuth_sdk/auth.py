@@ -66,7 +66,7 @@ class Auth(httpx.Auth):
         return httpx.Request(
             "POST",
             f"{self.base_url}/auth/{self.authenticator}/token/",
-            json = self.auth_data
+            data = self.auth_data
         )
     
     def _handle_token_response(self, response):
