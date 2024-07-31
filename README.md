@@ -1,6 +1,6 @@
 # azimuth-sdk
 
-An SDK for interacting with [Azimuth](https://github.com/stackhpc/azimuth) resources using
+An SDK for interacting with [Azimuth](https://github.com/azimuth-cloud/azimuth) resources using
 [Python](https://www.python.org/).
 
 Both synchronous use and asynchronous use, using the `async/await` syntax from
