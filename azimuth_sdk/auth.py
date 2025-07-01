@@ -7,7 +7,6 @@ import httpx
 
 from . import exceptions
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -15,17 +14,13 @@ class Auth(httpx.Auth):
     """
     Azimuth API authenticator.
     """
+
     def __init__(
-        self,
-        base_url,
-        *,
-        auth_data,
-        authenticator = None,
-        authenticator_type = None
+        self, base_url, *, auth_data, authenticator=None, authenticator_type=None
     ):
-        assert \
-            authenticator or authenticator_type, \
+        assert authenticator or authenticator_type, (
             "one of authenticator or authenticator_type is required"
+        )
         self.base_url = base_url.rstrip("/")
         self.authenticator = authenticator
         self.authenticator_type = authenticator_type
@@ -54,10 +49,13 @@ class Auth(httpx.Auth):
                 if v["type"] == self.authenticator_type
             )
         except StopIteration:
-            raise exceptions.SDKError(f"no authenticators with type '{self.authenticator_type}'")
+            raise exceptions.SDKError(
+                f"no authenticators with type '{self.authenticator_type}'"
+            )
         else:
             logger.debug(
-                f"using authenticator '{authenticator}' of type '{self.authenticator_type}'"
+                f"using authenticator '{authenticator}' "
+                f"of type '{self.authenticator_type}'"
             )
             self.authenticator = authenticator
 
@@ -66,9 +64,9 @@ class Auth(httpx.Auth):
         return httpx.Request(
             "POST",
             f"{self.base_url}/auth/{self.authenticator}/token/",
-            json = self.auth_data
+            json=self.auth_data,
         )
-    
+
     def _handle_token_response(self, response):
         self._raise_for_status(response)
         logger.debug("extracting token")
@@ -78,7 +76,7 @@ class Auth(httpx.Auth):
         logger.debug("applying request authentication")
         request.headers["Authorization"] = f"Bearer {self._token}"
         return request
-    
+
     def _refresh_token(self, lock):
         token = self._token
         yield lock.acquire()
@@ -94,7 +92,7 @@ class Auth(httpx.Auth):
             self._handle_token_response(response)
         finally:
             lock.release()
-    
+
     def auth_flow(self, request, lock):
         if not self._token:
             yield from self._refresh_token(lock)
@@ -112,7 +110,7 @@ class Auth(httpx.Auth):
             while True:
                 try:
                     yielded_obj = action(to_send)
-                except StopIteration as exc:
+                except StopIteration as exc:  # noqa: F841
                     break
                 try:
                     if isinstance(yielded_obj, httpx.Request):
@@ -136,7 +134,7 @@ class Auth(httpx.Auth):
             while True:
                 try:
                     yielded_obj = action(to_send)
-                except StopIteration as exc:
+                except StopIteration as exc:  # noqa: F841
                     break
                 try:
                     if inspect.isawaitable(yielded_obj):

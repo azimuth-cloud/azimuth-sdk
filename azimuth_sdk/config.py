@@ -5,7 +5,6 @@ import yaml
 
 from . import auth, client, exceptions
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -13,6 +12,7 @@ class Configuration:
     """
     Class for an Azimuth client configuration.
     """
+
     def __init__(self, **kwargs):
         self._kwargs = kwargs
 
@@ -33,43 +33,38 @@ class Configuration:
         merged = self._kwargs.copy()
         merged.update(kwargs)
         return client.SyncClient(**merged)
-    
+
     @classmethod
     def create(
         cls,
         base_url,
         *,
         auth_data,
-        authenticator = None,
-        authenticator_type = None,
-        **kwargs
+        authenticator=None,
+        authenticator_type=None,
+        **kwargs,
     ):
         """
         Returns a new Azimuth client configuration with the specified auth.
         """
         return cls(
-            base_url = base_url,
-            auth = auth.Auth(
+            base_url=base_url,
+            auth=auth.Auth(
                 base_url,
-                authenticator = authenticator,
-                authenticator_type = authenticator_type,
-                auth_data = auth_data
+                authenticator=authenticator,
+                authenticator_type=authenticator_type,
+                auth_data=auth_data,
             ),
-            **kwargs
+            **kwargs,
         )
-    
+
     @classmethod
     def from_openstack_clouds_file(
-        cls,
-        base_url,
-        path,
-        cloud = "openstack",
-        *,
-        default_tenancy_id = None,
-        **kwargs
+        cls, base_url, path, cloud="openstack", *, default_tenancy_id=None, **kwargs
     ):
         """
-        Returns a new Azimuth client configuration populated from an openstack cloud-config.
+        Returns a new Azimuth client configuration populated from an openstack
+        cloud-config.
         """
         logger.debug(f"loading openstack config for cloud '{cloud}' from {path}")
         with open(path) as fh:
@@ -93,10 +88,10 @@ class Configuration:
         logger.debug(f"using authenticator type '{authenticator_type}'")
         return cls.create(
             base_url,
-            authenticator_type = authenticator_type,
-            auth_data = auth_data,
-            default_tenancy_id = default_tenancy_id or auth.get("project_id"),
-            **kwargs
+            authenticator_type=authenticator_type,
+            auth_data=auth_data,
+            default_tenancy_id=default_tenancy_id or auth.get("project_id"),
+            **kwargs,
         )
 
     @classmethod
@@ -118,14 +113,13 @@ class Configuration:
                 if path:
                     if os.path.exists(path):
                         return cls.from_openstack_clouds_file(
-                            base_url,
-                            path,
-                            os_cloud,
-                            **kwargs
+                            base_url, path, os_cloud, **kwargs
                         )
                     else:
                         logger.warn(f"file {path} does not exist")
             else:
-                raise exceptions.SDKError("no openstack config file in standard locations")
+                raise exceptions.SDKError(
+                    "no openstack config file in standard locations"
+                )
         else:
             raise exceptions.SDKError("no suitable authentication found in environment")

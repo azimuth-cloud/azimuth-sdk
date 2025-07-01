@@ -13,9 +13,10 @@ class APIErrorMeta(type):
     """
     Metaclass for the API error type.
     """
-    __exceptions__ = {}
 
-    def __new__(cls, name, bases, attrs, status_code = None):
+    __exceptions__ = {}  # noqa: RUF012
+
+    def __new__(cls, name, bases, attrs, status_code=None):
         klass = super().__new__(cls, name, bases, attrs)
         klass.__status_code__ = status_code
         return klass
@@ -23,7 +24,7 @@ class APIErrorMeta(type):
     def __getitem__(cls, code):
         if code not in cls.__exceptions__:
             name = re.sub(r"[^a-zA-Z0-9]", "", codes.get_reason_phrase(code))
-            klass = type(name, (APIError, ), {}, status_code = code)
+            klass = type(name, (APIError,), {}, status_code=code)
             cls.__exceptions__[code] = klass
         return cls.__exceptions__[code]
 
@@ -36,10 +37,11 @@ class APIErrorMeta(type):
             return cls[status_code](source)
 
 
-class APIError(SDKError, metaclass = APIErrorMeta):
+class APIError(SDKError, metaclass=APIErrorMeta):
     """
     Base class for Azimuth API errors.
     """
+
     def __init__(self, source):
         super().__init__(source.response.text)
         self.request = source.request
